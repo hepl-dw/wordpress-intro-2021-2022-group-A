@@ -6,5 +6,12 @@
     <title>Document</title>
 </head>
 <body>
-    <h1><?= get_bloginfo('name'); ?></h1>
-    <p><?= get_bloginfo('description'); ?></p>
+    <header class="header">
+        <h1 class="header__title"><?= get_bloginfo('name'); ?></h1>
+        <p class="header__tagline"><?= get_bloginfo('description'); ?></p>
+
+        <nav class="header__nav nav">
+            <h2 class="nav__title">Navigation principale</h2>
+            <p class="nav__placeholder">TODO...</p>
+        </nav>
+    </header>
