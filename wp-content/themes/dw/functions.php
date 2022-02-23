@@ -17,4 +17,5 @@ register_post_type('trip', [
     'public' => true,
     'menu_position' => 5,
     'menu_icon' => 'dashicons-palmtree',
+    'supports' => ['title','editor','thumbnail'],
 ]);
