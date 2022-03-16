@@ -4,6 +4,16 @@
 require_once(__DIR__ . '/Menus/PrimaryMenuWalker.php');
 require_once(__DIR__ . '/Menus/PrimaryMenuItem.php');
 
+// Lancer la sessions PHP pour pouvoir passer des variables de page en page
+add_action('init', 'dw_start_session', 1);
+
+function dw_start_session()
+{
+    if (! session_id()) {
+        session_start();
+    }
+}
+
 // Désactiver l'éditeur "Gutenberg" de Wordpress
 add_filter('use_block_editor_for_post', '__return_false');
 
@@ -117,14 +127,21 @@ function dw_handle_submit_contact_form()
     $nonce = $_POST['_wpnonce'];
 
     if(! wp_verify_nonce($nonce, 'nonce_submit_contact')) {
-        // TODO : retourner un message d'erreur "not authorized".
+        die('Unauthorized.');
     }
 
     $data = dw_sanitize_contact_form_data();
 
     if($errors = dw_validate_contact_form_data($data)) {
-        // C'est pas OK
-        return $errors;
+        // C'est pas OK, on place les erreurs de validation dans la session
+        $_SESSION['contact_form_feedback'] = [
+            'success' => false,
+            'data' => $data,
+            'errors' => $errors,
+        ];
+
+        // On redirige l'utilisateur vers le formulaire pour y afficher le feedback d'erreurs.
+        return wp_safe_redirect($_POST['_wp_http_referer'] . '#contact', 302);
     }
 
     // C'est OK.
@@ -142,6 +159,13 @@ function dw_handle_submit_contact_form()
 
     // Envoyer l'email à l'admin
     wp_mail(get_bloginfo('admin_email'), 'Nouveau message !', $feedback);
+
+    // Ajouter le feedback positif à la session
+    $_SESSION['contact_form_feedback'] = [
+        'success' => true,
+    ];
+    
+    return wp_safe_redirect($_POST['_wp_http_referer'] . '#contact', 302);
 }
 
 function dw_sanitize_contact_form_data()
@@ -182,4 +206,26 @@ function dw_validate_contact_form_data($data)
     }
 
     return $errors ?: false;
+}
+
+function dw_get_contact_field_value($field)
+{
+    if(! isset($_SESSION['contact_form_feedback'])) {
+        return '';
+    }
+
+    return $_SESSION['contact_form_feedback']['data'][$field] ?? '';
+}
+
+function dw_get_contact_field_error($field)
+{
+    if(! isset($_SESSION['contact_form_feedback'])) {
+        return '';
+    }
+
+    if(! ($_SESSION['contact_form_feedback']['errors'][$field] ?? null)) {
+        return '';
+    }
+
+    return '<p>Ce champ ne respecte pas : ' . $_SESSION['contact_form_feedback']['errors'][$field] . '</p>';
 }
