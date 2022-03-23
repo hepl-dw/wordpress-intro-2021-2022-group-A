@@ -38,6 +38,7 @@ register_post_type('trip', [
     ],
     'description' => 'Tous les articles qui décrivent un voyage',
     'public' => true,
+    'has_archive' => true,
     'menu_position' => 5,
     'menu_icon' => 'dashicons-palmtree',
     'supports' => ['title','editor','thumbnail'],
