@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="<?= dw_mix('css/style.css'); ?>" />
+    <script type="text/javascript" src="<?= dw_mix('js/script.js'); ?>"></script>
 </head>
 <body>
     <header class="header">

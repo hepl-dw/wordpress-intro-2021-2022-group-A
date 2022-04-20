@@ -159,3 +159,29 @@ function dw_get_contact_field_error($field)
 
     return '<p>Ce champ ne respecte pas : ' . $_SESSION['contact_form_feedback']['errors'][$field] . '</p>';
 }
+
+// Fonction qui charge les assets compilés et retourne leure chemin absolu
+
+function dw_mix($path)
+{
+    $path = '/' . ltrim($path, '/');
+
+    if(! realpath(__DIR__ .'/public' . $path)) {
+        return;
+    }
+
+    if(! ($manifest = realpath(__DIR__ .'/public/mix-manifest.json'))) {
+        return get_stylesheet_directory_uri() . '/public' . $path;
+    }
+
+    // Ouvrir le fichier mix-manifest.json
+    $manifest = json_decode(file_get_contents($manifest), true);
+
+    // Regarder si on a une clef qui correspond au fichier chargé dans $path
+    if(! array_key_exists($path, $manifest)) {
+        return get_stylesheet_directory_uri() . '/public' . $path;
+    }
+
+    // Récupérer & retourner le chemin versionné
+    return get_stylesheet_directory_uri() . '/public' . $manifest[$path];
+}
