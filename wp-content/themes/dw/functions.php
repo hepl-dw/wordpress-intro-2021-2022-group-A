@@ -1,6 +1,7 @@
 <?php
 
 // Charger les fichiers nécessaires
+require_once(__DIR__ . '/CustomSearchQuery.php');
 require_once(__DIR__ . '/Menus/PrimaryMenuWalker.php');
 require_once(__DIR__ . '/Menus/PrimaryMenuItem.php');
 require_once(__DIR__ . '/Forms/BaseFormController.php');
@@ -67,14 +68,15 @@ register_post_type('message', [
 ]);
 
 // Récupérer les trips via une requête Wordpress
-function dw_get_trips($count = 20)
+function dw_get_trips($count = 20, $search = null)
 {
     // 1. on instancie l'objet WP_Query
-    $trips = new WP_Query([
+    $trips = new DW_CustomSearchQuery([
         'post_type' => 'trip',
         'orderby' => 'date',
         'order' => 'DESC',
         'posts_per_page' => $count,
+        's' => strlen($search) ? $search : null,
     ]);
 
     // 2. on retourne l'objet WP_Query
@@ -185,3 +187,14 @@ function dw_mix($path)
     // Récupérer & retourner le chemin versionné
     return get_stylesheet_directory_uri() . '/public' . $manifest[$path];
 }
+
+// Restreindre la requête de recherche "par défaut"
+function dw_restrict_search_query($query) {
+    if ($query->is_search && ! is_admin() && ! is_a($query, DW_CustomSearchQuery::class)) {
+        $query->set('post_type', ['post']);
+    }
+ 
+    return $query;
+}
+ 
+add_filter('pre_get_posts','dw_restrict_search_query');
