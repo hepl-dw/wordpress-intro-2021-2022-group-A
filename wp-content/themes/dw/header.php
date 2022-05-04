@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO</title>
+    <title><?= wp_title('·', false, 'right') . get_bloginfo('name'); ?></title>
     <link rel="stylesheet" type="text/css" href="<?= dw_mix('css/style.css'); ?>" />
     <script type="text/javascript" src="<?= dw_mix('js/script.js'); ?>"></script>
     <?php wp_head(); ?>
