@@ -70,6 +70,17 @@ register_post_type('message', [
     'map_meta_cap' => true,
 ]);
 
+// Register custom taxonomy
+register_taxonomy('country', ['trip'], [
+    'labels' => [
+        'name' => 'Pays',
+        'singular_name' => 'Pays',
+    ],
+    'description' => 'Tous les pays que nous avons visités',
+    'public' => true,
+    'hierarchical' => true,
+]);
+
 // Récupérer les trips via une requête Wordpress
 function dw_get_trips($count = 20, $search = null)
 {
@@ -84,6 +95,15 @@ function dw_get_trips($count = 20, $search = null)
 
     // 2. on retourne l'objet WP_Query
     return $trips;
+}
+
+// Récupérer les termes de la taxonomie "pays"
+function dw_get_countries()
+{
+    return get_terms([
+        'taxonomy' => 'country',
+        'hide_empty' => true,
+    ]);
 }
 
 // Enregistrer les zones de menus
@@ -195,6 +215,16 @@ function dw_mix($path)
 function dw_restrict_search_query($query) {
     if ($query->is_search && ! is_admin() && ! is_a($query, DW_CustomSearchQuery::class)) {
         $query->set('post_type', ['post']);
+    }
+
+    if(is_archive() && isset($_GET['filter-country'])) {
+        $query->set('tax_query', [
+            [
+                'taxonomy' => 'country',
+                'field' => 'slug',
+                'terms' => explode(',', $_GET['filter-country']),
+            ]
+        ]);
     }
  
     return $query;
