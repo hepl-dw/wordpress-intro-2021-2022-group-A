@@ -241,3 +241,23 @@ function dw_include(string $partial, array $variables = [])
     include(__DIR__ . '/partials/' . $partial . '.php');
 }
 
+// Générer un lien vers la première page utilisant un certain template
+
+function dw_get_template_page(string $template)
+{
+    // Créer une WP_Query
+    $query = new WP_Query([
+        'post_type' => 'page', // uniquement récupérer des pages
+        'post_status' => 'publish', // uniquement les pages publiées
+        'meta_query' => [
+            [
+                'key' => '_wp_page_template',
+                'value' => $template . '.php', // Filtrer sur le template utilisé
+            ]
+        ]
+    ]);
+
+    // Retourner le premier Post en question
+    return $query->posts[0] ?? null;
+}
+

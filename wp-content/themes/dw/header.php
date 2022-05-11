@@ -55,6 +55,10 @@
                     <a href="<?= $locale['url']; ?>" lang="<?= $locale['locale']; ?>" hreflang="<?= $locale['locale']; ?>" class="nav__locale" title="<?= $locale['name']; ?>"><?= $code; ?></a>
                 <?php endforeach; ?>
             </div>
+
+            <div class="nav__cta">
+                <a href="<?= get_the_permalink(dw_get_template_page('template-contact')); ?>" class="nav__contact"><?= __('Contactez-moi !', 'dw'); ?></a>
+            </div>
         </nav>
         <form class="header__search search" role="search" method="get" action="<?= get_home_url(); ?>">
             <div class="search__container">
